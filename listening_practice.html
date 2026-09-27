@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Listening EHE203 - Practice</title>
+<style>
+:root{
+ --bg:#f7f8fa; --card:#fff; --tx:#1c1d1f; --mu:#6c757d; --bd:#e2e2e2;
+ --pr:#1976d2; --prd:#0d3f7a; --ok:#1e7e34; --okb:#eaf7ec; --ko:#c9302c; --kob:#fdecec;
+ --pa:#9a6a00; --pab:#fff6e0; --side:#f5f6f8; --headbg:#fff;
+}
+[data-theme="dark"]{
+ --bg:#14161a; --card:#1e2126; --tx:#eceef1; --mu:#9aa1ab; --bd:#33373f;
+ --pr:#4d9eff; --prd:#2c6fc9; --ok:#4cc26c; --okb:#173321; --ko:#ff6b66; --kob:#3a1c1b;
+ --pa:#e0a83f; --pab:#3a2f14; --side:#1a1d22; --headbg:#191c21;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif}
+a{color:var(--pr);text-decoration:none}
+/* header */
+header.top{background:var(--headbg);border-bottom:1px solid var(--bd);padding:10px 20px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;flex-direction:column;line-height:1.25}
+.brand .code{font-size:.72rem;color:var(--mu);text-transform:uppercase;letter-spacing:.03em}
+.brand .title{font-weight:700;font-size:.95rem}
+.headctrl{display:flex;align-items:center;gap:14px}
+.switch{position:relative;width:40px;height:22px;background:var(--bd);border-radius:20px;cursor:pointer;display:inline-flex;align-items:center;padding:2px}
+.switch .knob{width:18px;height:18px;background:var(--pr);border-radius:50%;transition:transform .15s}
+[data-theme="dark"] .switch .knob{transform:translateX(18px)}
+.acct{background:var(--side);border:1px solid var(--bd);border-radius:6px;padding:5px 10px;font-size:.8rem;color:var(--mu)}
+nav.tabs{display:flex;gap:22px;padding:0 20px;border-bottom:1px solid var(--bd);background:var(--headbg)}
+nav.tabs a{padding:10px 2px;font-size:.9rem;color:var(--mu);border-bottom:2px solid transparent}
+nav.tabs a.active{color:var(--pr);border-color:var(--pr);font-weight:600}
+/* layout */
+.wrap{display:flex;gap:22px;max-width:1120px;margin:22px auto;padding:0 20px;align-items:flex-start}
+.side{width:270px;flex-shrink:0;background:var(--card);border:1px solid var(--bd);border-radius:8px;overflow:hidden;transition:width .18s ease,opacity .18s ease;}
+.side.collapsed{width:0;min-width:0;border:0;opacity:0;overflow:hidden;margin-right:-22px}
+.side-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--side);border-bottom:1px solid var(--bd)}
+.side-head h3{margin:0;font-size:.95rem}
+.icon-btn{background:transparent;border:1px solid var(--bd);border-radius:5px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--mu);flex-shrink:0}
+.icon-btn:hover{color:var(--pr);border-color:var(--pr)}
+.reopen-tab{position:sticky;top:70px;flex-shrink:0;display:none}
+.reopen-tab.show{display:block}
+.week{border-bottom:1px solid var(--bd)}
+.week:last-child{border-bottom:none}
+.week-head{display:flex;align-items:center;gap:8px;padding:10px 14px;cursor:pointer;font-size:.85rem;font-weight:600;background:var(--card)}
+.week-head:hover{background:var(--side)}
+.week-head .chev{transition:transform .15s;font-size:.7rem;color:var(--mu)}
+.week.open .week-head .chev{transform:rotate(90deg)}
+.week-body{max-height:0;overflow:hidden;transition:max-height .18s ease}
+.week.open .week-body{max-height:600px}
+.side label{display:flex;gap:8px;align-items:flex-start;padding:9px 14px 9px 30px;border-top:1px solid var(--bd);font-size:.84rem;cursor:pointer}
+.side .week-body label:first-child{border-top:none}
+.side .cnt{color:var(--mu);font-size:.76rem;display:block}
+.side .footctl{padding:12px 14px;display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--bd)}
+.main{flex:1;min-width:0}
+/* content card, mimics edX unit card */
+.unit{background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:20px 22px;margin-bottom:14px}
+.unit h1{font-size:1.15rem;margin:0 0 4px}
+.bookmark{font-size:.8rem;color:var(--pr);margin-bottom:10px}
+.meta{font-size:.8rem;color:var(--mu);margin-bottom:14px}
+.tagpill{display:inline-block;background:var(--side);border:1px solid var(--bd);border-radius:4px;padding:1px 8px;font-size:.72rem;margin-left:6px}
+.q-block{border-top:1px solid var(--bd);padding-top:16px;margin-top:16px}
+.q-block:first-of-type{border-top:none;margin-top:0;padding-top:0}
+.tag{font-size:.72rem;color:var(--mu);text-transform:uppercase;letter-spacing:.03em;margin-bottom:4px}
+.q{font-weight:600;margin:2px 0 12px;font-size:.96rem}
+.instr{color:var(--mu);font-size:.85rem;margin-bottom:10px}
+.opt{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--bd);border-radius:6px;margin:7px 0;cursor:pointer;background:var(--card)}
+.opt:hover{border-color:var(--pr)}
+.opt.right{background:var(--okb);border-color:var(--ok)}
+.opt.wrong{background:var(--kob);border-color:var(--ko)}
+.opt input{margin-top:4px}
+.mark{margin-left:auto;font-weight:700}
+.mark.ok{color:var(--ok)}.mark.ko{color:var(--ko)}
+input.txt,select{width:100%;padding:8px 10px;border:1px solid var(--bd);border-radius:6px;background:var(--card);color:var(--tx);font:inherit}
+.rowq{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:center;margin:8px 0}
+@media(max-width:640px){.wrap{flex-direction:column}.side{width:100%}.rowq{grid-template-columns:1fr}}
+.rowq.ok input,.rowq.ok select{border-color:var(--ok)}
+.rowq.bad input,.rowq.bad select{border-color:var(--ko)}
+.passage{background:var(--side);padding:12px;border-radius:6px;font-size:.88rem;margin-bottom:10px;border:1px solid var(--bd)}
+.fb{font-size:.82rem;margin-top:4px;color:var(--ok)}
+.note{font-size:.8rem;margin-top:8px;padding:8px 10px;border-radius:6px;background:var(--pab);color:var(--pa)}
+btn,button{font:inherit}
+button.primary{background:var(--prd);color:#fff;border:1px solid var(--prd);border-radius:5px;padding:9px 18px;font-weight:600;cursor:pointer}
+button.ghost{background:transparent;color:var(--pr);border:1px solid var(--pr);border-radius:5px;padding:9px 18px;cursor:pointer}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.scorebox{text-align:center;padding:10px 0}
+.score{font-size:2.6rem;font-weight:700;color:var(--prd)}
+.progressbar{font-size:.85rem;color:var(--mu);margin-bottom:8px}
+footer.site{max-width:1120px;margin:10px auto 30px;padding:14px 20px;color:var(--mu);font-size:.78rem;border-top:1px solid var(--bd)}
+</style></head>
+<body>
+<header class="top">
+  <div class="brand"><span class="code">mesrs EHE203</span><span class="title">Listening B2 Level - Practice Quiz</span></div>
+  <div class="headctrl">
+    <div class="switch" id="themeSwitch" title="Toggle dark mode"><div class="knob"></div></div>
+    <div class="acct">practice_mode</div>
+  </div>
+</header>
+<nav class="tabs"><a class="active">Course</a><a>Progress</a><a>Dates</a><a>Discussion</a></nav>
+<div class="wrap">
+  <button class="icon-btn reopen-tab" id="reopenBtn" title="Show course outline" onclick="toggleSide(true)">☰</button>
+  <aside class="side" id="side"></aside>
+  <main class="main" id="main"></main>
+</div>
+<footer class="site">© All Rights Reserved · Practice quiz built from your course activities · Copyrights © 2026</footer>
+<script>
+const DATA={"course": {"code": "mesrs EHE203", "title": "Listening B2 Level - Session1 (2025-2026)"}, "legend": {"answer_status": {"confirmed": "Marked correct (green) by the platform, or shown as the platform's key.", "inferred": "Deduced because the student's answer was marked wrong; verify with 'Show answer'."}}, "weeks": [{"week": 1, "title": "Unit 1: Introduction to Listening Skills", "activities": [{"activity": "Listening Activity 1", "instructions": "Listen to the video, and then answer the following questions by choosing a, b, c, or d.", "max_points": 10, "questions": [{"id": "L-A1-Q1", "question": "This video is talking about …….", "type": "single_choice", "options": ["a) The history of the monarchy", "b) The income and wealth of the monarchy", "c) The role of the monarchy in society", "d) The popularity of the monarchy among different generations"], "correct_answer": "b) The income and wealth of the monarchy", "answer_status": "confirmed", "passage": "Video: 'Absolutely Mind-Bending Figures': Inside Look At The Wealth Of The Royal Family (MSNBC)", "passage_reference": "This activity is based on a YouTube video embedded in the course; the transcript itself was not captured, only the graded questions and answers."}, {"id": "L-A1-Q2", "question": "The Sovereign Grant is funded by the government.", "type": "single_choice", "options": ["a. True", "b. False"], "correct_answer": "a. True", "answer_status": "confirmed"}, {"id": "L-A1-Q3", "question": "The Sovereign Grant represents ………………….", "type": "single_choice", "options": ["a) Personal wealth of the royal family", "b) Profits from the Crown Estate paid to the government", "c) Foreign terms to an American audience", "d) Duchy of Cornwall activities paid for by the duchy of Commonwealth"], "correct_answer": "b) Profits from the Crown Estate paid to the government", "answer_status": "confirmed"}, {"id": "L-A1-Q4", "question": "Laura Clancy is a journalist.", "type": "single_choice", "options": ["a. True", "b. False"], "correct_answer": "a. True", "answer_status": "confirmed"}, {"id": "L-A1-Q5", "question": "The Duchy of Cornwall is………………………", "type": "single_choice", "options": ["a) A public asset owned by the Queen", "b) A legal owner of the Crown Estate", "c) An estate worth $1.2 billion to fund the activities of the direct air to the throne", "d) A way to conceal the personal wealth of the royal family"], "correct_answer": "c) An estate worth $1.2 billion to fund the activities of the direct air to the throne", "answer_status": "confirmed"}, {"id": "L-A1-Q6", "question": "The duchy of Cornwall is worth $28 billion.", "type": "single_choice", "options": ["a. True", "b. False"], "correct_answer": "b. False", "answer_status": "confirmed"}, {"id": "L-A1-Q7", "question": "How much of the profits from the Crown Estate currently goes back to the royal family as public funding?", "type": "single_choice", "options": ["a) 25%", "b) 50%", "c) 75%", "d) 100%"], "correct_answer": "a) 25%", "answer_status": "confirmed"}, {"id": "L-A1-Q8", "question": "Is there any talk about paying inheritance tax within the royal family according to the video content?", "type": "single_choice", "options": ["a) Yes, Prince Charles is considering it", "b) No, there is absolutely no talk of that whatsoever", "c) Yes, the younger generations are pushing for it", "d) No, the older generations are against it"], "correct_answer": "b) No, there is absolutely no talk of that whatsoever", "answer_status": "confirmed"}, {"id": "L-A1-Q9", "question": "How can the debate about inheritance taxes be solved according to the video content?", "type": "single_choice", "options": ["a) By bringing the two estates fully into public ownership and paying the monarchy one single lump sum as a budget", "b) By increasing the inheritance tax bill for the royal family", "c) By selling off some estates or gifting some estates to pare down the staff", "d) By making the monarchy more popular with the public"], "correct_answer": "a) By bringing the two estates fully into public ownership and paying the monarchy one single lump sum as a budget", "answer_status": "confirmed"}, {"id": "L-A1-Q10", "question": "What is the decision made in 1993 regarding inheritance tax?", "type": "single_choice", "options": ["a) The royal family does not have to pay inheritance tax", "b) The royal family has to pay a higher inheritance tax than others", "c) The royal family has to report their income and wealth", "d) The royal family has to sell their jewellery to pay off the inheritance tax bill"], "correct_answer": "a) The royal family does not have to pay inheritance tax", "answer_status": "confirmed"}]}]}, {"week": 2, "title": "Unit 2: Essentials of the Listening Skills", "activities": [{"activity": "Listening Activity 2", "sections": [{"instructions": "After listening to the Video, complete the black with the missing information: choose a, b, c, or d", "questions": [{"id": "L-A2-P1-Q1", "question": "The public schools in the United States were closed…………………", "type": "single_choice", "options": ["a) 69 years ago", "b) 45 years ago", "c) 30 years ago", "d) 3 years ago"], "correct_answer": "d) 3 years ago", "answer_status": "confirmed", "passage": "Video: COVID's education crisis: A lost generation? (CBS Sunday Morning)"}, {"id": "L-A2-P1-Q2", "question": "Geoffrey Canada is………………", "type": "single_choice", "options": ["a) A founder of a school in Manhattan", "b) A chief of psychology in Southern California", "c) A gym teacher in Meraki High School", "d) A researcher from the University of California"], "correct_answer": "a) A founder of a school in Manhattan", "answer_status": "confirmed"}, {"id": "L-A2-P1-Q3", "question": "The current situation with the pandemic in the United States……………………", "type": "single_choice", "options": ["a) is over and there are no restrictions", "b) is still ongoing but with fewer restrictions", "c) is still ongoing with the same restrictions", "d) is over but with some restrictions still in place"], "correct_answer": "b) is still ongoing but with fewer restrictions", "answer_status": "confirmed"}, {"id": "L-A2-P1-Q4", "question": "According to Geoffrey Canada, the current state of education in the United States………", "type": "single_choice", "options": ["A) is in a crisis", "B) is improving", "C) is stable", "D) is declining but not in a crisis"], "correct_answer": "A) is in a crisis", "answer_status": "confirmed"}, {"id": "L-A2-P1-Q5", "question": "What is the worst performance in math since testing began is………………………", "type": "single_choice", "options": ["A) 30 years ago", "B) 40 years ago", "C) 50 years ago", "D) 60 years ago"], "correct_answer": "D) 60 years ago", "answer_status": "confirmed"}, {"id": "L-A2-P1-Q6", "question": "There has been …………………in ELA and math scores across America.", "type": "single_choice", "options": ["a) an increase", "b) a decrease", "c) a delay", "d) an improvement"], "correct_answer": "b) a decrease", "answer_status": "confirmed"}, {"id": "L-A2-P1-Q7", "question": "…………………is the reason for the loss of students in school.", "type": "single_choice", "options": ["a) Remote teaching", "b) Lack of computers at home", "c) Increased violence", "d) Fear of watching family members die"], "correct_answer": "a) Remote teaching", "answer_status": "confirmed"}, {"id": "L-A2-P1-Q8", "question": "The average time kids spent on physical activity during the pandemic is…………….", "type": "single_choice", "options": ["a) 7 minutes", "b) 17 minutes", "c) 27 minutes", "d) 37 minutes"], "correct_answer": "b) 17 minutes", "answer_status": "confirmed"}, {"id": "L-A2-P1-Q9", "question": "…………….is among the programs designed to ease kids back into physical activity.", "type": "single_choice", "options": ["a) Highly regimented Sports and PE classes", "b) Relay races and frisbees", "c) Catch-up program", "d) Gym classes"], "correct_answer": "b) Relay races and frisbees", "answer_status": "confirmed"}, {"id": "L-A2-P1-Q10", "question": "the potential impact of the pandemic on the future of education is that…………….", "type": "single_choice", "options": ["a) It could lead to a lost generation", "b) It will have no impact", "c) It will improve education", "d) It will have a positive impact"], "correct_answer": "a) It could lead to a lost generation", "answer_status": "confirmed"}]}, {"instructions": "After listening to the Video, say whether the following statements are \"True\" or \"False\", then complete the paragraph with the missing information.", "questions": [{"id": "L-A2-P2-TF1", "question": "Covid has had no effect on schools that is visible to the naked eye.", "type": "true_false", "options": ["True", "False"], "correct_answer": "False", "answer_status": "confirmed"}, {"id": "L-A2-P2-TF2", "question": "According to a nationwide test given to Fourth and 8th graders, reading skills dropped to the lowest point in 30 years.", "type": "true_false", "options": ["True", "False"], "correct_answer": "False", "answer_status": "confirmed"}, {"id": "L-A2-P2-TF3", "question": "The loss of students in school is not related to the pandemic.", "type": "true_false", "options": ["True", "False"], "correct_answer": "False", "answer_status": "confirmed"}, {"id": "L-A2-P2-TF4", "question": "Remote teaching and a lack of computers at home are not to blame for the education crisis.", "type": "true_false", "options": ["True", "False"], "correct_answer": "False", "answer_status": "confirmed"}, {"id": "L-A2-P2-TF5", "question": "There has been an increase in the number of children presenting to emergency departments with mental health crises.", "type": "true_false", "options": ["True", "False"], "correct_answer": "True", "answer_status": "confirmed"}, {"id": "L-A2-P2-FILL", "question": "Complete the following paragraph with the missing information.", "type": "dropdown_passage", "correct_answer": {"(1)": "active", "(2)": "at school", "(3)": "mental", "(4)": "educators", "(5)": "generation"}, "answer_status": "confirmed", "passage": "keeping kids .....(1)... can do as much for their minds as their motor skills. Levels of activity for mild to moderate depression can be as effective as medication. So if we're active, if we're doing well ......... (2) ........, that can affect your ......... (3) ......... health, and your mental health can affect those things as well. So you get that vicious cycle going, right? There's a linkage there. It's all connected. But the bigger picture here, according to ......... (4) ............. like Jeffrey Canada, is that this could be a kind of lost ......... (5) ........, under-educated to the point where it drags down their future and ours."}]}], "max_points": 10}, {"activity": "Test2", "sections": [{"instructions": "Part1: Answer the following questions by choosing a, b, c, d, or e.", "questions": [{"id": "L-T2-P1-Q1", "question": "Reflecting back means you check to make sure that your understanding is correct.", "type": "single_choice", "options": ["a. True.", "b. False."], "correct_answer": "b. False.", "answer_status": "confirmed"}, {"id": "L-T2-P1-Q2", "question": "Mimicking verbal and nonverbal clues is necessary in empathetic listening.", "type": "single_choice", "options": ["a. True.", "b. False."], "correct_answer": "a. True.", "answer_status": "confirmed"}, {"id": "L-T2-P1-Q3", "question": "What should your facial expressions be when you listen empathetically?", "type": "single_choice", "options": ["a. Avoiding eye contact when listening.", "b. Echoing the speaker's content.", "c. Mirroring the speaker's content and feeling.", "d. Frowning while listening.", "e. None of the above."], "correct_answer": "e. None of the above.", "answer_status": "confirmed"}, {"id": "L-T2-P1-Q4", "question": "All of the following are nonverbal signs of inattention, EXCEPT:", "type": "single_choice", "options": ["a. Inappropriate answers and lack of head nods.", "b. Nodding and smiling.", "c. Daydreaming.", "d. Discriminative listening.", "e. None of the above."], "correct_answer": "e. None of the above.", "answer_status": "confirmed"}, {"id": "L-T2-P1-Q5", "question": "What type of listening is so essential that it is the basis for the other types of listening?", "type": "single_choice", "options": ["a. Analytical listening.", "b. Empathetic listening.", "c. Comprehensive listening.", "d. Appreciative listening.", "e. Discriminative listening."], "correct_answer": "e. Discriminative listening.", "answer_status": "confirmed"}, {"id": "L-T2-P1-Q6", "question": "Your teacher of English asked you to read about a particular topic. Then, he instructed you to listen to a video tape to check whether or not the same points are mentioned.", "type": "single_choice", "options": ["a. Top-down strategy.", "b. Bottom-up strategy.", "c. Listening for specific purpose.", "d. Focusing on sentence structure.", "e. None of the above."], "correct_answer": "b. Bottom-up strategy.", "answer_status": "confirmed"}, {"id": "L-T2-P1-Q7", "question": "How is echoing distinct from other active listening techniques?", "type": "single_choice", "options": ["a. You ask yes or no questions to get more information.", "b. You repeat the whole message in your own words.", "c. You restate the speaker's ideas in a very similar way.", "d. All of the above.", "e. None of the above."], "correct_answer": "c. You restate the speaker's ideas in a very similar way.", "answer_status": "confirmed"}, {"id": "L-T2-P1-Q8", "question": "Active listening requires acceptance of your own and respect for others:", "type": "single_choice", "options": ["a. Uniqueness.", "b. Emotions.", "c. Ego.", "d. Feelings and content.", "e. None of the above."], "correct_answer": "a. Uniqueness.", "answer_status": "confirmed"}, {"id": "L-T2-P1-Q9", "question": "These questions should be avoided when listening actively:", "type": "single_choice", "options": ["a. Yes or No questions.", "b. Follow up questions.", "c. 'And If I' locutions.", "d. Leading up questions.", "e. None of the above."], "correct_answer": "e. None of the above.", "answer_status": "confirmed"}, {"id": "L-T2-P1-Q10", "question": "How can you keep yourself attentive in a conversation?", "type": "single_choice", "options": ["a. By thinking about a time where you interacted with others.", "b. By thinking about asking questions.", "c. By maintaining eye contact and focusing on body language.", "d. By fiddling and getting impatient.", "e. None of the above."], "correct_answer": "c. By maintaining eye contact and focusing on body language.", "answer_status": "confirmed"}, {"id": "L-T2-P1-Q11", "question": "You can show other people that you are truly listening to them by:", "type": "single_choice", "options": ["a. Paraphrasing their ideas.", "b. Interrupting them to expose your own ideas.", "c. Letting them know that you don't agree with them.", "d. Ignoring them.", "e. None of the above."], "correct_answer": "a. Paraphrasing their ideas.", "answer_status": "confirmed"}, {"id": "L-T2-P1-Q12", "question": "In order to empathize with other people, you should:", "type": "single_choice", "options": ["a. Try to see things from your interlocutor's perspective.", "b. Insist solely on what you believe is right.", "c. Try to inflict your opinions on other people.", "d. Avoid eye contact and interrupt the speakers constantly.", "e. None of the above."], "correct_answer": "a. Try to see things from your interlocutor's perspective.", "answer_status": "confirmed"}, {"id": "L-T2-P1-Q13", "question": "Empathetic listening would not include ____ :", "type": "single_choice", "options": ["a. Feeling you have been heard.", "b. Inferring meaning on the basis of verbal and nonverbal clues.", "c. Feeling you have been understood.", "d. Trust among people who are communicating.", "e. None of the above."], "correct_answer": "e. None of the above.", "answer_status": "confirmed"}, {"id": "L-T2-P1-Q14", "question": "What might be an empathetic response if someone tells you, \"I've just lost my job\":", "type": "single_choice", "options": ["a. “No, you don't!”.", "b. It is a pity that you lose your job.", "c. \"You really feel like you lose your job right now.\"", "d. I'm so sorry to hear that.", "e. None of the above."], "correct_answer": "c. \"You really feel like you lose your job right now.\"", "answer_status": "confirmed"}, {"id": "L-T2-P1-Q15", "question": "____ is the least effective stage of listening taught in active or reflective listening courses:", "type": "single_choice", "options": ["a. Reflecting feelings.", "b. Mimicking content.", "c. Restating and summarizing what is being said.", "d. Reflecting content.", "e. None of the above."], "correct_answer": "b. Mimicking content.", "answer_status": "confirmed"}]}, {"instructions": "Part2 - Questions Part A: After listening to the Video, answer the following questions by choosing a, b, c, or d", "questions": [{"id": "L-T2-PA-Q1", "question": "What is the subject of the movie discussed in the video?", "type": "single_choice", "options": ["a) The Civil War", "b) Passing", "c) Hollywood", "d) The Harlem Renaissance"], "correct_answer": "b) Passing", "answer_status": "confirmed", "passage": "Video discussed: a report on the film \"Passing\" and the concept of racial passing."}, {"id": "L-T2-PA-Q2", "question": "What is passing?", "type": "single_choice", "options": ["a) When a member of a particular group is perceived as a member of another", "b) When someone pretends to be someone else", "c) When someone crosses a line", "d) When someone changes their identity"], "correct_answer": "a) When a member of a particular group is perceived as a member of another", "answer_status": "confirmed"}, {"id": "L-T2-PA-Q3", "question": "Who is Martina Hones?", "type": "single_choice", "options": ["a) A Chicago lawyer", "b) An actress", "c) A director", "d) A writer"], "correct_answer": "a) A Chicago lawyer", "answer_status": "confirmed"}, {"id": "L-T2-PA-Q4", "question": "What is Lisa Thunderberg's book about?", "type": "single_choice", "options": ["a) Passing", "b) Black and white people", "c) Mixed race people", "d) Racism"], "correct_answer": "c) Mixed race people", "answer_status": "confirmed"}, {"id": "L-T2-PA-Q5", "question": "What are some advantages of appearing to be white, according to Lisa Thunderberg?", "type": "single_choice", "options": ["a) You can get a cab and not be followed in stores", "b) You have more power in the country", "c) You don't experience racism", "d) All of the above"], "correct_answer": "a) You can get a cab and not be followed in stores", "answer_status": "confirmed"}, {"id": "L-T2-PA-Q6", "question": "What is the new film discussed in the video called?", "type": "single_choice", "options": ["a) Passing", "b) Vicki Christina Barcelona", "c) Imitation of Life", "d) The Human Stain"], "correct_answer": "a) Passing", "answer_status": "confirmed"}, {"id": "L-T2-PA-Q7", "question": "Who directed the new film?", "type": "single_choice", "options": ["a) Ruth Nega", "b) Tessa Thompson", "c) Rebecca Hall", "d) Michelle Miller"], "correct_answer": "c) Rebecca Hall", "answer_status": "confirmed"}, {"id": "L-T2-PA-Q8", "question": "What is the Schoenberg Center for Research in Black Culture?", "type": "single_choice", "options": ["a) A research center in Harlem", "b) A film studio", "c) A theater", "d) A museum"], "correct_answer": "a) A research center in Harlem", "answer_status": "confirmed"}, {"id": "L-T2-PA-Q9", "question": "Who are the stars of the new film?", "type": "single_choice", "options": ["a) Martina Hones and Lisa Thunderberg", "b) Ruth Nega and Tessa Thompson", "c) Michelle Miller and Rebecca Hall", "d) John Blue and Vicki Christina Barcelona"], "correct_answer": "b) Ruth Nega and Tessa Thompson", "answer_status": "confirmed"}, {"id": "L-T2-PA-Q10", "question": "What is the privilege of ambiguity?", "type": "single_choice", "options": ["a) The ability to choose your own identity", "b) The ability to pass", "c) The ability to be a protagonist on screen", "d) The ability to belong"], "correct_answer": "c) The ability to be a protagonist on screen", "answer_status": "confirmed"}]}, {"instructions": "Part2 - Questions Part B: After listening to the Video, say whether the following statements are \"True\" or \"False\"", "questions": [{"id": "L-T2-PB-TF1", "question": "The movie \"Passing\" is based on a novel that is almost 100 years old.", "type": "true_false", "options": ["True", "False"], "correct_answer": "True", "answer_status": "confirmed"}, {"id": "L-T2-PB-TF2", "question": "Passing is a new subject in Hollywood.", "type": "true_false", "options": ["True", "False"], "correct_answer": "False", "answer_status": "confirmed"}, {"id": "L-T2-PB-TF3", "question": "Martina Hones has never intentionally passed as white.", "type": "true_false", "options": ["True", "False"], "correct_answer": "False", "answer_status": "confirmed"}, {"id": "L-T2-PB-TF4", "question": "Passing only refers to crossing the colour line.", "type": "true_false", "options": ["True", "False"], "correct_answer": "False", "answer_status": "inferred", "note": "The student answered 'True' and it was marked wrong (0/2.5 lost on this item), so the key is 'False'."}, {"id": "L-T2-PB-TF5", "question": "Rebecca Hall filmed \"Passing\" in Harlem.", "type": "true_false", "options": ["True", "False"], "correct_answer": "True", "answer_status": "confirmed"}]}, {"instructions": "Part2 - Questions Part C: After listening to the Video, arrange the following sentences in the correct order to create a meaningful summary of the video.", "questions": [{"id": "L-T2-PC-ORDER", "question": "Arrange the following sentences in the correct order to create a meaningful summary of the video.", "type": "matching", "correct_answer": {"1.": "d", "2.": "b", "3.": "a", "4.": "c"}, "answer_status": "confirmed", "choices": ["a", "b", "c", "d"], "passage": "a) The video also highlights the upcoming film \"Passing,\" which tells the story of two black women, one who actively passes for white and the other who does not.\nb) It explores the experiences of individuals who are perceived as white but have black heritage, and how they navigate their identity in society.\nc) The film's director, Rebecca Hall, discusses the themes of racial passing and identity in the movie.\nd) The video discusses the concept of \"passing,\" where a member of a particular group is perceived as a member of another."}]}], "max_points": 20}]}]};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const norm=s=>String(s||"").trim().toLowerCase().replace(/\s+/g," ");
+document.getElementById('themeSwitch').onclick=()=>{
+  const h=document.documentElement;
+  h.setAttribute('data-theme', h.getAttribute('data-theme')==='dark'?'light':'dark');
+};
+const acts=[];
+const weekGroups=[];
+DATA.weeks.forEach(w=>{
+  const idxs=[];
+  w.activities.forEach(a=>{
+    const qs=[];
+    (a.sections||[{instructions:a.instructions,questions:a.questions}]).forEach(s=>s.questions.forEach(q=>qs.push({...q,instr:s.instructions})));
+    acts.push({name:`Week ${w.week} · ${a.activity}`,label:a.activity,qs});
+    idxs.push(acts.length-1);
+  });
+  weekGroups.push({title:w.title,idxs,open:true});
+});
+let S=null,sideOpen=true;
+function toggleSide(open){
+  sideOpen=open;
+  $('#side').classList.toggle('collapsed',!sideOpen);
+  $('#reopenBtn').classList.toggle('show',!sideOpen);
+}
+function toggleWeek(i){weekGroups[i].open=!weekGroups[i].open;renderSide()}
+function renderSide(){
+  $('#side').innerHTML=`<div class="side-head"><h3>Course outline</h3><button class="icon-btn" title="Hide sidebar" onclick="toggleSide(false)">✕</button></div>
+    ${weekGroups.map((g,wi)=>`
+      <div class="week ${g.open?'open':''}">
+        <div class="week-head" onclick="toggleWeek(${wi})"><span class="chev">▶</span><span>${esc(g.title)}</span></div>
+        <div class="week-body">
+          ${g.idxs.map(i=>{const a=acts[i];return `<label><input type="checkbox" class="sel" value="${i}" ${S?'':'checked'} ${S?'disabled':''}>
+            <span>${esc(a.label)}<span class="cnt">${a.qs.filter(q=>q.correct_answer!=null).length} questions</span></span>
+          </label>`}).join('')}
+        </div>
+      </div>`).join('')}
+    <div class="footctl">
+      <label style="border:0;padding:0;display:flex;gap:8px;align-items:center;cursor:pointer"><input type="checkbox" id="shuf" ${S?'disabled':''}> Shuffle questions</label>
+      ${S?'<button class="ghost" onclick="home()">Back to menu</button>':'<button class="primary" onclick="start()">Start quiz</button>'}
+    </div>`;
+}
+function home(){S=null;renderSide();
+  $('#main').innerHTML=`<div class="unit"><h1>Practice Quiz</h1><div class="meta">Select activities from the course outline on the left, then start the quiz. Answer every question, submit, and get your score with the correct answers shown.</div></div>`;
+}
+function start(){
+  const ids=[...document.querySelectorAll('.sel:checked')].map(x=>+x.value);
+  if(!ids.length)return alert('Select at least one activity.');
+  let list=ids.flatMap(i=>acts[i].qs.filter(q=>q.correct_answer!=null).map(q=>({...q,act:acts[i].name})));
+  if(document.getElementById('shuf').checked)list.sort(()=>Math.random()-.5);
+  let lastKey=null;
+  list.forEach(q=>{const key=q.act+'|'+(q.instr||'')+'|'+(q.passage||'');q.__header=(key!==lastKey);lastKey=key;});
+  S={list,ans:{},done:false};renderSide();quiz();window.scrollTo(0,0);
+}
+function grade(q,a){
+  const c=q.correct_answer,t=q.type;
+  if(a===undefined||a===null)return 0;
+  if(t==='multiple_choice'){const x=new Set(a);return x.size===c.length&&c.every(v=>x.has(v))?1:0}
+  if(t==='fill_in_blank')return norm(a)===norm(c)?1:0;
+  if(t==='matching'||t==='dropdown_passage'){const k=Object.keys(c);return k.filter(x=>norm(a[x])===norm(c[x])).length/k.length}
+  return a===c?1:0;
+}
+function answered(){return S.list.filter((q,i)=>{const a=S.ans[i];return a&&(typeof a==='string'?a.trim():Array.isArray(a)?a.length:Object.values(a).some(v=>v))}).length}
+function qblock(q,i){
+  const a=S.ans[i],d=S.done,dis=d?'disabled':'',f=d?grade(q,a):null;
+  let h=`<div class="q-block"><div class="tag">${esc(q.act)} · ${esc(q.id)}</div>`;
+  if(q.__header){
+    if(q.instr)h+=`<div class="instr">${esc(q.instr)}</div>`;
+    if(q.passage)h+=`<p class="passage">${esc(q.passage)}${q.passage_reference?`<br><br><em>${esc(q.passage_reference)}</em>`:''}</p>`;
+  }
+  h+=`<div class="q">${i+1}. ${esc(q.question)}</div>`;
+  const t=q.type;
+  if(t==='matching'||t==='dropdown_passage'){
+    Object.keys(q.correct_answer).forEach(k=>{
+      const v=(a&&a[k])||'',ok=d&&norm(v)===norm(q.correct_answer[k]);
+      const inp=t==='matching'?`<select data-q="${i}" data-k="${esc(k)}" ${dis}><option value="">— choose —</option>${q.choices.map(o=>`<option value="${esc(o)}" ${o===v?'selected':''}>${esc(o)}</option>`).join('')}</select>`
+        :`<input class="txt" data-q="${i}" data-k="${esc(k)}" value="${esc(v)}" placeholder="Missing word" ${dis}>`;
+      h+=`<div class="rowq ${d?(ok?'ok':'bad'):''}"><div>${esc(k)}</div><div>${inp}${d&&!ok?`<div class="fb">Correct: ${esc(q.correct_answer[k])}</div>`:''}</div></div>`;
+    });
+  }else if(t==='fill_in_blank'){
+    h+=`<input class="txt" data-q="${i}" value="${esc(a||'')}" placeholder="Your answer" ${dis}>`;
+    if(q.choices_in_question)h+=`<div class="instr">Choices: ${q.choices_in_question.map(esc).join(' / ')}</div>`;
+    if(d&&f!==1)h+=`<div class="fb">Correct: ${esc(q.correct_answer)}</div>`;
+  }else{
+    const multi=t==='multiple_choice',cor=multi?q.correct_answer:[q.correct_answer];
+    if(multi&&!d)h+=`<div class="instr">Select ${cor.length} answer(s)</div>`;
+    q.options.forEach(o=>{
+      const on=multi?(a||[]).includes(o):a===o;
+      const cls=d?(cor.includes(o)?'right':on?'wrong':''):'';
+      const mark=d&&cor.includes(o)?'<span class="mark ok">✓</span>':(d&&on?'<span class="mark ko">✕</span>':'');
+      h+=`<label class="opt ${cls}"><input type="${multi?'checkbox':'radio'}" name="q${i}" data-q="${i}" data-v="${esc(o)}" ${on?'checked':''} ${dis}><span>${esc(o)}</span>${mark}</label>`;
+    });
+  }
+  if(d&&q.answer_status!=='confirmed')h+=`<div class="note">⚠ Answer inferred, not confirmed by the platform.${q.note?' '+esc(q.note):''}</div>`;
+  return h+'</div>';
+}
+function quiz(){
+  const L=S.list;let head,foot='';
+  if(S.done){
+    const g=L.map((q,i)=>grade(q,S.ans[i])),tot=g.reduce((x,y)=>x+y,0),pct=Math.round(100*tot/L.length);
+    head=`<div class="unit scorebox"><div class="score">${tot%1?tot.toFixed(1):tot} / ${L.length}</div><div class="meta">${pct}% · ${g.filter(x=>x===1).length} correct, ${g.filter(x=>x>0&&x<1).length} partial, ${g.filter(x=>x===0).length} wrong</div>
+    <div class="row"><button class="primary" onclick="retry()">Retry same set</button><button class="ghost" onclick="home()">Back to menu</button></div></div>`;
+  }else{
+    head=`<div class="unit"><h1>Practice Quiz</h1><div class="bookmark progressbar">Answered ${answered()} / ${L.length}</div></div>`;
+    foot=`<div class="row" style="max-width:1120px;margin:16px auto"><button class="primary" onclick="submitQ()">Submit &amp; see score</button></div>`;
+  }
+  $('#main').innerHTML=`${head}<div class="unit">${L.map(qblock).join('')}</div>${foot}`;
+}
+function retry(){S={list:S.list,ans:{},done:false};quiz();window.scrollTo(0,0)}
+function submitQ(){
+  const un=S.list.length-answered();
+  if(un&&!confirm(`${un} question(s) unanswered. Submit anyway?`))return;
+  S.done=true;renderSide();quiz();window.scrollTo(0,0);
+}
+function upd(e){
+  if(!S||S.done)return;const el=e.target,i=el.dataset.q;if(i===undefined)return;
+  if(el.type==='radio')S.ans[i]=el.dataset.v;
+  else if(el.type==='checkbox')S.ans[i]=[...document.querySelectorAll(`input[name=q${i}]:checked`)].map(x=>x.dataset.v);
+  else if(el.dataset.k!==undefined){(S.ans[i]=S.ans[i]||{})[el.dataset.k]=el.value}
+  else S.ans[i]=el.value;
+  const p=document.querySelector('.progressbar');if(p)p.textContent=`Answered ${answered()} / ${S.list.length}`;
+}
+document.addEventListener('input',upd);document.addEventListener('change',upd);
+renderSide();home();
+</script>
+</body></html>
